@@ -1,4 +1,4 @@
-package lab;
+package com.reagan.lab;
 
 import java.util.*;
 
