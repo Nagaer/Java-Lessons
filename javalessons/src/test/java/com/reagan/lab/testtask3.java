@@ -10,7 +10,7 @@ class testtask3 {
     }
     @Test
     void morePlusmoreTest() {
-        Assertions.assertEquals(12000, task3.summ(10000,2000));
+        Assertions.assertEquals(12000000, task3.summ(10000000,2000000));
     }
     @Test
     void plusZeroTest() {
