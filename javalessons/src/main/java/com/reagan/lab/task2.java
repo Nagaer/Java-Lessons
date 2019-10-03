@@ -12,7 +12,6 @@ public class task2 {
             System.arraycopy(list_text, 1, new_list_text, 0, list_text.length-1);
             list_text = new_list_text;
         }
-        System.out.print(Arrays.toString(list_text));
         Map<String, Integer> dict_text = new HashMap<String, Integer>();
         int N = list_text.length;
         for (int i = 0; i < N; i++) {
