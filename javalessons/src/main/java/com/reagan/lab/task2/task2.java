@@ -1,25 +1,23 @@
-package com.reagan.lab;
-
-import com.sun.deploy.util.ArrayUtil;
+package com.reagan.lab.task2;
 
 import java.util.*;
 
-public class task2 {
-    static Map<String, Integer> numwords(String text) {
-        String[] list_text = text.split(" +");
+public class task2 { //Имена класса с большой буквы и говорящие
+    public static Map<String, Integer> numwords(String text) {
+        text = text.trim(); //Удаляет лишние пробелы
+        String[] list_text = " ".split(text); //Правильно так listText, final если мы не меняем потом
         if (list_text[0].equals("")) {
             String[] new_list_text = new String[list_text.length-1];
             System.arraycopy(list_text, 1, new_list_text, 0, list_text.length-1);
             list_text = new_list_text;
         }
         Map<String, Integer> dict_text = new HashMap<String, Integer>();
-        int N = list_text.length;
-        for (int i = 0; i < N; i++) {
-            if (dict_text.containsKey(list_text[i])) {
-                dict_text.put(list_text[i], dict_text.get(list_text[i]) + 1);
+        for (String word : list_text) {
+            if (dict_text.containsKey(word)) {
+                dict_text.put(word, dict_text.get(word) + 1);
             }
             else {
-                dict_text.put(list_text[i], 1);
+                dict_text.put(word, 1);
             }
         }
         return dict_text;

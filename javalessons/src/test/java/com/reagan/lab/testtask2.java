@@ -1,5 +1,6 @@
 package com.reagan.lab;
 
+import com.reagan.lab.task2.task2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
