@@ -1,10 +1,10 @@
 package com.reagan.lab.task4.structureFaculty;
 
 public class Lesson {
-    Subject lessSub;
-    DateTime[] lessTime;
-    Group lessGroup;
-    Educator lessEducator;
+    private Subject lessSub; //сделать private
+    private DateTime[] lessTime;
+    private Group lessGroup;
+    private Educator lessEducator;
 
     public Lesson(Subject lessSub, DateTime[] lessTime, Group lessGroup, Educator lessEducator) {
         this.lessSub=lessSub;
@@ -21,6 +21,5 @@ public class Lesson {
         Group G = new Group(S, "41");
         Educator E = new Educator("Малыхин");
         Lesson L = new Lesson(new Subject("Матан"), D, G, E);
-        System.out.println(L.lessSub.name);
     }
 }

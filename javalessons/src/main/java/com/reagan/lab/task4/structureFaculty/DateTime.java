@@ -11,8 +11,8 @@ enum Day {
 }
 
 public class DateTime {
-    Day dayOfWeek;
-    int hour, minute;
+    private Day dayOfWeek;
+    private int hour, minute;
     public DateTime(Day dayOfWeek, int hour, int minute) {
         this.dayOfWeek = dayOfWeek;
         this.hour = hour;
