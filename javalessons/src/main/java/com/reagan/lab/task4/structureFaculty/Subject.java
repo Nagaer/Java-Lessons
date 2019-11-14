@@ -5,4 +5,7 @@ public class Subject {
     public Subject(String name) {
         this.name = name;
     }
+    public void printSubject() {
+        System.out.print(this.name);
+    }
 }
