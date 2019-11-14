@@ -14,13 +14,13 @@ public class DateTime {
     private Day dayOfWeek;
     private int hour, minute;
 
-    public DateTime(Day dayOfWeek, int hour, int minute) {
+    private DateTime(Day dayOfWeek, int hour, int minute) {
         this.dayOfWeek = dayOfWeek;
         this.hour = hour;
         this.minute = minute;
     }
 
-    public static DateTime[] CreateCouple(int NumOfDay, int NumOfCouple) {
+    static DateTime[] CreateCouple(int NumOfDay, int NumOfCouple) {
         Day day = null;
         if (NumOfDay==1)
             day = Day.Monday;
@@ -93,11 +93,11 @@ public class DateTime {
         return D;
     }
 
-    public void printDayTime() {
+    void printDayTime() {
         System.out.print(this.dayOfWeek);
     }
 
-    public void printTime() {
+    void printTime() {
         System.out.print(this.hour);
         System.out.print(":");
         if (this.minute == 0)
