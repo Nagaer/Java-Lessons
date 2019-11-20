@@ -2,7 +2,6 @@ package com.reagan.ind.Zerus;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Environment extends JFrame {
@@ -14,7 +13,7 @@ public class Environment extends JFrame {
     public Environment(int width, int height) {
         Environment.width = width;
         Environment.height = height;
-        this.creatures = new Creature[width][height];
+        creatures = new Creature[width][height];
 
         setTitle("Зерус");
         setSize(new Dimension(winWidth, winHeight));

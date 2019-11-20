@@ -70,6 +70,7 @@ public class Creature {
 
     public void mitosis() {
         Creature newCreature = new Creature();
+        int yooo = 0;
         int incX = 0, incY = 0;
         switch (surrounded()) {
             case "0":
