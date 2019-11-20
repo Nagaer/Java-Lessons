@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class Environment extends JFrame {
     static int winWidth = 1670, winHeight = 870; //Размер для окна
     static int width, height; //Кол-во клеток в среде
-    Creature[][] creatures; //Сетка существ
+    static Creature[][] creatures; //Сетка существ
     int generation;
 
     public Environment(int width, int height) {
@@ -33,13 +33,13 @@ public class Environment extends JFrame {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (creatures[x][y] == null) {
+                if (creatures[x][y] == null) { //Не существует
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect(50 + x * 4, 50 + y * 4, 4,4);
-                } else if (creatures[x][y].status == 1) {
-                    graphics.setColor((Color) creatures[x][y].color);
+                } else if (creatures[x][y].status == 1) { //Живой, рисуем его цветом
+                    graphics.setColor(Color.GREEN);
                     graphics.fillRect(50 + x * 4, 50 + y * 4, 4,4);
-                } else if (creatures[x][y].status == 2) {
+                } else if (creatures[x][y].status == 2) { //Мёртв, рисуем серым
                     graphics.setColor(Color.GRAY);
                     graphics.fillRect(50 + x * 4, 50 + y * 4, 4,4);
                 }
@@ -70,7 +70,7 @@ public class Environment extends JFrame {
     }
 
     public static void main(String[] args) {
-        Environment simulation = new Environment(50, 50);
+        Environment simulation = new Environment(400, 200);
         simulation.createAdam();
         simulation.run();
     }
@@ -83,8 +83,10 @@ public class Environment extends JFrame {
         creature.y = height/2;
         creature.energy = 100;
         creature.color = Arrays.asList(0, 250, 0);
-        creature.status = 2;
-        //creature.mind.add(1);
+        creature.status = 1;
+        creature.mind = new MarkovChain(0, 1, 1.0);
+        creature.mind.addEdge(1, 2, 1.0);
+        creature.mind.addEdge(2, -1, 1.0);
 
         creatures[creature.x][creature.y] = creature;
     }
