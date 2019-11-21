@@ -12,12 +12,11 @@ public class Creature {
     List<Integer> color;
     MarkovChain mind; //Мозг - однонаправленный граф состояний
 
-    public void step() {
+    void step() {
         Random random = new Random();
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
         cur = 0;
         while (cur != -1) {
-            System.out.println(cur);
             execute(cur);
             cur = mind.branching(cur);
         }
@@ -30,7 +29,7 @@ public class Creature {
         }
     }
 
-    public void execute(int num) {
+    private void execute(int num) {
         switch (num) {
             case 2:
                 photosynthesis();
@@ -39,8 +38,8 @@ public class Creature {
         }
     }
 
-    public String surrounded() {
-        ArrayList<String> directions = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8"));
+    private String surrounded() {
+        List<String> directions = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8"));
         if (Environment.creatures[x][y-1] != null)
             directions.remove("1");
         if (Environment.creatures[x+1][y-1] != null)
@@ -64,13 +63,12 @@ public class Creature {
         return directions.get(rnd);
     }
 
-    public void photosynthesis() {
+    private void photosynthesis() {
         energy += (11 - (15*y/Environment.height))+50; //Ускоренный рост для тестов
     }
 
-    public void mitosis() {
+    private void mitosis() {
         Creature newCreature = new Creature();
-        int yooo = 0;
         int incX = 0, incY = 0;
         switch (surrounded()) {
             case "0":

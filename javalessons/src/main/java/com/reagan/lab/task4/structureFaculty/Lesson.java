@@ -1,12 +1,14 @@
 package com.reagan.lab.task4.structureFaculty;
 
 public class Lesson {
+    int num;
     private Subject lessSub;
     private DateTime[] lessTime;
     private Group lessGroup;
     private Educator lessEducator;
 
-    Lesson(Subject lessSub, DateTime[] lessTime, Group lessGroup, Educator lessEducator) {
+    public Lesson(int num, Subject lessSub, DateTime[] lessTime, Group lessGroup, Educator lessEducator) {
+        this.num = num;
         this.lessSub=lessSub;
         this.lessTime=lessTime;
         this.lessGroup=lessGroup;
@@ -27,7 +29,7 @@ public class Lesson {
         this.lessEducator.printEducator();
         System.out.println();
     }
-
+/*
     public static void main(String[] args) {
         DateTime[] D = DateTime.CreateCouple(1, 2);
         Student[] S = {new Student("Иванов"), new Student("Петров"), new Student("Сидоров")};
@@ -36,7 +38,7 @@ public class Lesson {
         Lesson LTesting = new Lesson(new Subject("Матан"), D, G, E);
         LTesting.printLesson();
     }
-
+*/
     boolean hasStudent(String name) {
         return this.lessGroup.hasStudent(name);
     }

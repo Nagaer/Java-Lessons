@@ -1,31 +1,32 @@
 package com.reagan.ind.Zerus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MarkovChain {
-    class Edge {
+    static class Edge {
         int v1, v2;
         Double weight;
-        Edge(int v1, int v2, double w) {
+        Edge(int v1, int v2, double weight) {
             this.v1 = v1;
             this.v2 = v2;
-            weight = w;
+            this.weight = weight;
         }
     }
 
-    ArrayList<Edge> edgesList;
+    List<Edge> edgesList;
 
     public MarkovChain(int v1, int v2, double weight) {
         edgesList = new ArrayList<>();
         edgesList.add(new Edge(v1, v2, weight));
     }
 
-    public void addEdge(int v1, int v2, double weight) {
+    void addEdge(int v1, int v2, double weight) {
         edgesList.add(new Edge(v1, v2, weight));
     }
 
     public void checkVertex(int v) { //Уравнивает инстинкты
-        ArrayList<Edge> res = new ArrayList<>();
+        List<Edge> res = new ArrayList<>();
         for (Edge edge : edgesList) {
             if (edge.v1 == v) {
                 res.add(edge);
@@ -33,12 +34,12 @@ public class MarkovChain {
         }
         int n = res.size();
         for (Edge edge : res) {
-            edgesList.set(edgesList.indexOf(edge), new Edge(edge.v1, edge.v2, 1/n));
+            edgesList.set(edgesList.indexOf(edge), new Edge(edge.v1, edge.v2, 1 / n));
         }
     }
 
-    public ArrayList<Edge> searchEdge(int v) {
-        ArrayList<Edge> res = new ArrayList<>();
+    public List<Edge> searchEdge(int v) {
+        List<Edge> res = new ArrayList<>();
         for (Edge edge : edgesList) {
             if ((edge.v1 == v) || (edge.v2 == v)) {
                 res.add(edge);
@@ -63,6 +64,7 @@ public class MarkovChain {
 
     public MarkovChain mutate() {
         //Добавление нового ребра по номеру команды или изменение инстинктов у уже существующего (состояния отсутствия соседей, наличия соседей и окружения)
+
         return this;
     }
     /*

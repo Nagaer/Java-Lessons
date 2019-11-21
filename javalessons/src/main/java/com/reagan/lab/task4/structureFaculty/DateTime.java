@@ -20,7 +20,7 @@ public class DateTime {
         this.minute = minute;
     }
 
-    static DateTime[] CreateCouple(int NumOfDay, int NumOfCouple) {
+    public static DateTime[] CreateCouple(int NumOfDay, int NumOfCouple) {
         Day day = null;
         if (NumOfDay==1)
             day = Day.Monday;

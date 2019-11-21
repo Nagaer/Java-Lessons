@@ -1,14 +1,20 @@
 package com.reagan.lab.task4.structureFaculty;
 
-class Group {
-    private Student[] grStudents;
+import java.util.List;
+
+public class Group {
+    private int num;
+    private List<Student> grStudents;
     private String name;
-    Group(Student[] grStudents, String name) {
+    public Group(int num, List<Student> grStudents, String name) {
+        this.num = num;
         this.grStudents = grStudents;
         this.name = name;
     }
 
     void printGroup() {
+        System.out.print(this.num);
+        System.out.print("; ");
         for (Student student : this.grStudents) {
             student.printStudent();
             System.out.print(" ");
