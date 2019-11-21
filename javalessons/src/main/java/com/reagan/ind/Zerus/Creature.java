@@ -20,7 +20,6 @@ public class Creature {
             execute(cur);
             cur = mind.branching(cur);
         }
-        energy-=mind.edgesList.size()*10;
         if (energy > 1000) {
             mitosis();
         }
@@ -31,31 +30,59 @@ public class Creature {
 
     private void execute(int num) {
         switch (num) {
-            case 2:
+            case 20:
                 photosynthesis();
-                cur = -1;
+                //cur = -1;
                 break;
         }
     }
 
     private String surrounded() {
         List<String> directions = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8"));
-        if (Environment.creatures[x][y-1] != null)
-            directions.remove("1");
-        if (Environment.creatures[x+1][y-1] != null)
-            directions.remove("2");
-        if (Environment.creatures[x+1][y] != null)
-            directions.remove("3");
-        if (Environment.creatures[x+1][y+1] != null)
-            directions.remove("4");
-        if (Environment.creatures[x][y+1] != null)
-            directions.remove("5");
-        if (Environment.creatures[x-1][y+1] != null)
+        if (x==0) {
             directions.remove("6");
-        if (Environment.creatures[x-1][y] != null)
             directions.remove("7");
-        if (Environment.creatures[x-1][y-1] != null)
             directions.remove("8");
+        }
+        if (y==0) {
+            directions.remove("8");
+            directions.remove("1");
+            directions.remove("2");
+        }
+        if (x==Environment.width*4) {
+            directions.remove("2");
+            directions.remove("3");
+            directions.remove("4");
+        }
+        if (y==Environment.height*4) {
+            directions.remove("4");
+            directions.remove("5");
+            directions.remove("6");
+        }
+        if (directions.contains("1"))
+            if (Environment.creatures[x][y-1] != null)
+                directions.remove("1");
+        if (directions.contains("2"))
+            if (Environment.creatures[x+1][y-1] != null)
+                directions.remove("2");
+        if (directions.contains("3"))
+            if (Environment.creatures[x+1][y] != null)
+                directions.remove("3");
+        if (directions.contains("4"))
+            if (Environment.creatures[x+1][y+1] != null)
+                directions.remove("4");
+        if (directions.contains("5"))
+            if (Environment.creatures[x][y+1] != null)
+                directions.remove("5");
+        if (directions.contains("6"))
+            if (Environment.creatures[x-1][y+1] != null)
+                directions.remove("6");
+        if (directions.contains("7"))
+            if (Environment.creatures[x-1][y] != null)
+                directions.remove("7");
+        if (directions.contains("8"))
+            if (Environment.creatures[x-1][y-1] != null)
+                directions.remove("8");
         if (directions.size() == 0) {
             return "0";
         }
@@ -64,7 +91,8 @@ public class Creature {
     }
 
     private void photosynthesis() {
-        energy += (11 - (15*y/Environment.height))+50; //Ускоренный рост для тестов
+        double q = 11 - (15*y/Environment.height)+50;
+        energy += q; //Ускоренный рост для тестов
     }
 
     private void mitosis() {

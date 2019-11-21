@@ -2,6 +2,14 @@ package com.reagan.ind.Zerus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+/* Список вершин-состояний/команд Цепи Маркова
+0 - анализ, отсюда мы выходим на три разных состояния: рядом никого, рядом кто-то есть, окружены
+1 - состояние "рядом никого"
+10 - движение
+20 - фотосинтез
+ */
 
 public class MarkovChain {
     static class Edge {
@@ -15,14 +23,19 @@ public class MarkovChain {
     }
 
     List<Edge> edgesList;
+    int numBioSystem;
 
     public MarkovChain(int v1, int v2, double weight) {
         edgesList = new ArrayList<>();
         edgesList.add(new Edge(v1, v2, weight));
+        numBioSystem = 0;
     }
 
-    void addEdge(int v1, int v2, double weight) {
+    public void addEdge(int v1, int v2, double weight) {
         edgesList.add(new Edge(v1, v2, weight));
+        if ((v1==10) || (v1 == 20)) {
+            numBioSystem++;
+        }
     }
 
     public void checkVertex(int v) { //Уравнивает инстинкты
@@ -64,7 +77,15 @@ public class MarkovChain {
 
     public MarkovChain mutate() {
         //Добавление нового ребра по номеру команды или изменение инстинктов у уже существующего (состояния отсутствия соседей, наличия соседей и окружения)
-
+        /*
+        if (Math.random() < 0.5) {
+            int rnd = new Random().nextInt(numBioSystem);
+            System.out.println(rnd);
+        }
+        if (Math.random() < 0.25) {
+            int rnd = new Random().nextInt(numBioSystem);
+        }
+        */
         return this;
     }
     /*

@@ -30,8 +30,8 @@ public class Environment extends JFrame {
 
     @Override
     public void paint(Graphics graphics) {
-        int qx = 50, qy = 120;
-        graphics.drawRect(qx-1, qy-1, width * 4 + 1, height * 4 + 1);
+        int coordX = 45, coordY = 120;
+        graphics.drawRect(coordX-1, coordY-1, width * 4 + 1, height * 4 + 1);
 
         organic = 0;
         population = 0;
@@ -39,16 +39,16 @@ public class Environment extends JFrame {
             for (int x = 0; x < width; x++) {
                 if (creatures[x][y] == null) { //Не существует, рисуем белым
                     graphics.setColor(Color.WHITE);
-                    graphics.fillRect(qx + x * 4, qy + y * 4, 4,4);
+                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
                 } else if (creatures[x][y].status == 1) { //Живой, рисуем его цветом (временно зелёным)
                     graphics.setColor(Color.GREEN);
-                    graphics.fillRect(qx + x * 4, qy + y * 4, 4,4);
+                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
                     population++;
                 } else if (creatures[x][y].status == 2) { //Мёртв, рисуем серым
                     graphics.setColor(Color.WHITE);
-                    graphics.fillRect(qx + x * 4, qy + y * 4, 4,4);
+                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
                     graphics.setColor(Color.GRAY);
-                    graphics.fillRect(qx + x * 4, qy + y * 4, 3,3);
+                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 3,3);
                     organic++;
                 }
             }
@@ -97,14 +97,14 @@ public class Environment extends JFrame {
         Creature creature = new Creature();
 
         creature.cur = 0;
-        creature.x = width/2;
-        creature.y = height/2;
+        creature.x = width/200;
+        creature.y = height/200;
         creature.energy = 100;
         creature.color = Arrays.asList(0, 250, 0);
         creature.status = 1;
         creature.mind = new MarkovChain(0, 1, 1.0);
-        creature.mind.addEdge(1, 2, 1.0);
-        creature.mind.addEdge(2, -1, 1.0);
+        creature.mind.addEdge(1, 20, 1.0);
+        creature.mind.addEdge(20, -1, 1.0);
 
         creatures[creature.x][creature.y] = creature;
     }
