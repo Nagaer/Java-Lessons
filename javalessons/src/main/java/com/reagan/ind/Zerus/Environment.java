@@ -97,8 +97,8 @@ public class Environment extends JFrame {
         Creature creature = new Creature();
 
         creature.cur = 0;
-        creature.x = width/200;
-        creature.y = height/200;
+        creature.x = width/2;
+        creature.y = height/2;
         creature.energy = 100;
         creature.color = Arrays.asList(0, 250, 0);
         creature.status = 1;

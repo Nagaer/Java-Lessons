@@ -13,13 +13,14 @@ public class Creature {
     MarkovChain mind; //Мозг - однонаправленный граф состояний
 
     void step() {
-        Random random = new Random();
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
+        mind.printChain();
         cur = 0;
         while (cur != -1) {
             execute(cur);
             cur = mind.branching(cur);
         }
+		energy -= 3;
         if (energy > 1000) {
             mitosis();
         }
@@ -30,31 +31,67 @@ public class Creature {
 
     private void execute(int num) {
         switch (num) {
+            case 11:
+                absoluteMove(this.x, this.y-1);
+            case 12:
+                absoluteMove(this.x+1, this.y-1);
+            case 13:
+                absoluteMove(this.x+1, this.y);
+            case 14:
+                absoluteMove(this.x+1, this.y+1);
+            case 15:
+                absoluteMove(this.x, this.y+1);
+            case 16:
+                absoluteMove(this.x-1, this.y+1);
+            case 17:
+                absoluteMove(this.x-1, this.y);
+            case 18:
+                absoluteMove(this.x-1, this.y-1);
             case 20:
                 photosynthesis();
-                //cur = -1;
                 break;
+        }
+    }
+
+    private void absoluteMove(int x, int y) {
+        System.out.println("Time to move!");
+        if ((x>=0) && (y>=0) && (x<=Environment.width) && (y<=Environment.height))
+            if (Environment.creatures[x][y]!=null)
+                return;
+        if (x < 0) {
+            this.x = 0;
+        } else if (x >= Environment.width - 1) {
+            this.x = Environment.width - 1;
+        } else {
+            this.x = x;
+        }
+        if (y < 0) {
+            this.y = 0;
+        } else if (y >= Environment.height - 1) {
+            this.y = Environment.height - 1;
+        } else {
+            this.y = y;
         }
     }
 
     private String surrounded() {
         List<String> directions = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8"));
-        if (x==0) {
+        if (x<=0) {
             directions.remove("6");
             directions.remove("7");
             directions.remove("8");
         }
-        if (y==0) {
+        if (y<=0) {
             directions.remove("8");
             directions.remove("1");
             directions.remove("2");
         }
-        if (x==Environment.width*4) {
+        if (x>=Environment.width - 1) {
             directions.remove("2");
             directions.remove("3");
             directions.remove("4");
         }
-        if (y==Environment.height*4) {
+        if (y>=Environment.height - 1) {
             directions.remove("4");
             directions.remove("5");
             directions.remove("6");
@@ -142,8 +179,9 @@ public class Creature {
         newCreature.energy = this.energy/2;
         newCreature.color = this.color;
         newCreature.status = 1;
-        newCreature.mind = this.mind.mutate();
-        this.mind = this.mind.mutate();
+        newCreature.mind = this.mind;
+        newCreature.mind.mutate();
+        this.mind.mutate();
 
         Environment.creatures[newCreature.x][newCreature.y] = newCreature;
     }
