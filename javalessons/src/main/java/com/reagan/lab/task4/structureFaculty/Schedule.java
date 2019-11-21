@@ -58,7 +58,7 @@ public class Schedule {
 
     public Schedule searchStudent(Student student) {
         Schedule Sch = new Schedule(new ArrayList<>());
-        for (Lesson l : lessonsList) {
+        for (Lesson l : this.lessonsList) {
             if (l.hasStudent(student.name)) {
                 Sch.lessonsList.add(l);
             }
@@ -77,12 +77,10 @@ public class Schedule {
     }
 /*
     public static void main(String[] args) {
-        Schedule Sch = initSchedule();
-        //Schedule S1 = Sch.searchEducator("Малыхин");
-        //S1.printSchedule();
-        Schedule S2 = Sch.searchStudent(new Student(1, "Иванов"));
-        S2.printSchedule();
+        Student student1 = new Student(1, "Student1");
+        Schedule schedule1 = Schedule.searchStudent(student1);
+        schedule1.printSchedule();
     }
+*/
 
- */
 }
