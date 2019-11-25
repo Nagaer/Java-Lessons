@@ -2,7 +2,9 @@ package com.reagan.ind.Zerus;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Environment extends JFrame {
     static int width, height; //Кол-во клеток в среде
@@ -30,8 +32,8 @@ public class Environment extends JFrame {
 
     @Override
     public void paint(Graphics graphics) {
-        int coordX = 45, coordY = 120;
-        graphics.drawRect(coordX-1, coordY-1, width * 4 + 1, height * 4 + 1);
+        int cordX = 45, cordY = 120;
+        graphics.drawRect(cordX-1, cordY-1, width * 4 + 1, height * 4 + 1);
 
         organic = 0;
         population = 0;
@@ -39,16 +41,24 @@ public class Environment extends JFrame {
             for (int x = 0; x < width; x++) {
                 if ((creatures[x][y] == null) || (creatures[x][y].status == 0)) { //Не существует, рисуем белым
                     graphics.setColor(Color.WHITE);
-                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
+                    graphics.fillRect(cordX + x * 4, cordY + y * 4, 4,4);
                 } else if (creatures[x][y].status == 1) { //Живой, рисуем его цветом (временно зелёным)
-                    graphics.setColor(Color.GREEN);
-                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
+                    graphics.setColor(Color.BLACK);
+                    graphics.fillRect(cordX + x * 4, cordY + y * 4, 4,4);
+
+                    int green = (int) (creatures[x][y].color_G - ((creatures[x][y].color_G * creatures[x][y].energy) / 2000));
+                    if (green < 0)
+                        green = 0;
+                    else if (green > 255)
+                        green = 255;
+                    graphics.setColor(new Color(creatures[x][y].color_R, green, creatures[x][y].color_B));
+                    graphics.fillRect(cordX + x * 4 + 1, cordY + y * 4 + 1, 3,3);
                     population++;
                 } else if (creatures[x][y].status == 2) { //Мёртв, рисуем серым
                     graphics.setColor(Color.WHITE);
-                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
+                    graphics.fillRect(cordX + x * 4, cordY + y * 4, 4,4);
                     graphics.setColor(Color.GRAY);
-                    graphics.fillRect(coordX + x * 4, coordY + y * 4, 3,3);
+                    graphics.fillRect(cordX + x * 4, cordY + y * 4, 3,3);
                     organic++;
                 }
             }
@@ -81,7 +91,7 @@ public class Environment extends JFrame {
                 }
             }
             generation++;
-            if (generation%10 == 0) {
+            if (generation % 20 == 0) {
                 paint(getGraphics());
             }
         }
@@ -96,15 +106,20 @@ public class Environment extends JFrame {
     private void createAdam() {
         Creature creature = new Creature();
 
-        creature.cur = 0;
         creature.x = width/2;
         creature.y = height/2;
-        creature.energy = 100;
-        creature.color = Arrays.asList(0, 250, 0);
+        creature.energy = 990;
+        creature.mineral = 0;
+        creature.direction = 4;
+        creature.color_R = 170;
+        creature.color_G = 170;
+        creature.color_B = 170;
         creature.status = 1;
-        creature.mind = new MarkovChain(0, 1, 1.0);
-        creature.mind.addEdge(1, 20, 1.0);
-        creature.mind.addEdge(20, -1, 1.0);
+        List<Integer> listMind = new ArrayList<>();
+        for (int i = 0; i < 64; ++i) {
+            listMind.add(25);
+        }
+        creature.mind = new Mind(listMind);
 
         creatures[creature.x][creature.y] = creature;
     }
