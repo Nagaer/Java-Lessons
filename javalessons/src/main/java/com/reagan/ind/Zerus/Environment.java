@@ -46,12 +46,13 @@ public class Environment extends JFrame {
                     graphics.setColor(Color.BLACK);
                     graphics.fillRect(cordX + x * 4, cordY + y * 4, 4,4);
 
-                    int green = (int) (creatures[x][y].color_G - ((creatures[x][y].color_G * creatures[x][y].energy) / 2000));
+                    int green = (int) (creatures[x][y].color_G - ((creatures[x][y].color_G*creatures[x][y].energy)/2000));
                     if (green < 0)
                         green = 0;
                     else if (green > 255)
                         green = 255;
-                    graphics.setColor(new Color(creatures[x][y].color_R, green, creatures[x][y].color_B));
+                    int blue = (int) (creatures[x][y].color_B*0.8 - ((creatures[x][y].color_B*creatures[x][y].mineral)/2000));
+                    graphics.setColor(new Color(creatures[x][y].color_R, green, blue));
                     graphics.fillRect(cordX + x * 4 + 1, cordY + y * 4 + 1, 3,3);
                     population++;
                 } else if (creatures[x][y].status == 2) { //Мёртв, рисуем серым
@@ -91,7 +92,7 @@ public class Environment extends JFrame {
                 }
             }
             generation++;
-            if (generation % 20 == 0) {
+            if (generation % 10 == 0) {
                 paint(getGraphics());
             }
         }
