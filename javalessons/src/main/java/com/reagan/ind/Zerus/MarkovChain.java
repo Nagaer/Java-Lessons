@@ -64,9 +64,11 @@ public class MarkovChain {
                 n++;
             }
         }
+        //System.out.println("Какую вершину чекаем? = " + v);
+        //System.out.println("Количество рёбер = " + n);
         for (Edge edge : res) {
             edgesList.set(edgesList.indexOf(edge), new Edge(edge.v1, edge.v2, 1.0/n));
-            System.out.println(1/n);
+            //System.out.println(1/n);
         }
     }
 
@@ -83,19 +85,20 @@ public class MarkovChain {
         for (Edge edge : edgesList) {
             if (edge.v1 == v) {
                 sum += edge.weight;
-                if (sum>=q) {
-                    System.out.println(edge.v2);
+                if (sum >= q) {
+                    //System.out.println(sum + " " + q);
+                    //System.out.println(edge.v2);
                     return edge.v2;
                 }
             }
         }
-        System.out.println(-1);
+        //System.out.println(-1);
         return -1;
     }
 
     public void mutate() {
         //Добавление нового ребра по номеру команды или изменение инстинктов у уже существующего (состояния отсутствия соседей, наличия соседей и окружения)
-
+        /*
         if (Math.random() < 0.5) { //Изменение инстинктов у случайной команды
             int numSystem = (int) (Math.random()*numBioSystem); //Адам решил, что эта система важнее
             int change = 1;
@@ -124,11 +127,12 @@ public class MarkovChain {
             }
             //Если существо чем-то не пользуется с шансом меньше Eps - удаляем это
         }
+        */
         if (Math.random() < 0.25) { //Появление новой команды
             if (totalNumSystem - numBioSystem != 0) { //Если больше нечему появляться, выходим
                 int rnd = (int) (Math.random() * (totalNumSystem - numBioSystem));
                 List<Integer> listSystem = new ArrayList<>();
-                for (int i = 0; i<totalNumSystem; ++i)
+                for (int i = 0; i < totalNumSystem; ++i)
                     listSystem.add((i + 1)*10);
                 for (Edge edge : edgesList) {
                     if (edge.v1 == 1) {
@@ -137,40 +141,30 @@ public class MarkovChain {
                 }
                 int numSystem = listSystem.get(rnd);
                 addEdge(1, numSystem, 1.0);
-                addEdge(numSystem, 1, 1.0);
+                if (numSystem!=10)
+                   addEdge(numSystem, 1, 1.0);
                 checkVertex(1);
                 if (numSystem == 10) { //Много рёбер для движения
                     addEdge(10, 11, 0.125);
-                    addEdge(11, 1, 1.0);
+                    addEdge(11, -1, 1.0);
                     addEdge(10, 12, 0.125);
-                    addEdge(12, 1, 1.0);
+                    addEdge(12, -1, 1.0);
                     addEdge(10, 13, 0.125);
-                    addEdge(13, 1, 1.0);
+                    addEdge(13, -1, 1.0);
                     addEdge(10, 14, 0.125);
-                    addEdge(14, 1, 1.0);
+                    addEdge(14, -1, 1.0);
                     addEdge(10, 15, 0.125);
-                    addEdge(15, 1, 1.0);
+                    addEdge(15, -1, 1.0);
                     addEdge(10, 16, 0.125);
-                    addEdge(16, 1, 1.0);
+                    addEdge(16, -1, 1.0);
                     addEdge(10, 17, 0.125);
-                    addEdge(17, 1, 1.0);
+                    addEdge(17, -1, 1.0);
                     addEdge(10, 18, 0.125);
-                    addEdge(18, 1, 1.0);
+                    addEdge(18, -1, 1.0);
                 }
             } else {
-                System.out.println("Мы добавили все системы!");
+                //System.out.println("Мы добавили все системы!");
             }
         }
     }
-    /*
-    public static void main(String[] args) {
-        MarkovChain mark = new MarkovChain(0, 1, 1.0);
-        mark.addEdge(1, 2, 1.0);
-        mark.addEdge(2, -1, 1.0);
-        int cur = 0;
-        while (cur != -1) {
-            cur = mark.branching(cur);
-        }
-    }
-    */
 }

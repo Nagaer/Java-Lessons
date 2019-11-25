@@ -14,11 +14,11 @@ public class Creature {
 
     void step() {
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
-        mind.printChain();
         cur = 0;
         while (cur != -1) {
             execute(cur);
             cur = mind.branching(cur);
+            //System.out.println(cur);
         }
 		energy -= 3;
         if (energy > 1000) {
@@ -29,49 +29,97 @@ public class Creature {
         }
     }
 
+    private Creature copy() {
+        Creature copyCreature = new Creature();
+        copyCreature.energy = this.energy;
+        copyCreature.cur = this.cur;
+        copyCreature.status = this.status;
+        copyCreature.x = this.x;
+        copyCreature.y = this.y;
+        copyCreature.color = this.color;
+        copyCreature.mind = this.mind;
+        return copyCreature;
+
+
+    }
+
     private void execute(int num) {
         switch (num) {
             case 11:
                 absoluteMove(this.x, this.y-1);
+                System.out.println(11);
+                break;
             case 12:
                 absoluteMove(this.x+1, this.y-1);
+                System.out.println(12);
+                break;
             case 13:
                 absoluteMove(this.x+1, this.y);
+                System.out.println(13);
+                break;
             case 14:
                 absoluteMove(this.x+1, this.y+1);
+                System.out.println(14);
+                break;
             case 15:
                 absoluteMove(this.x, this.y+1);
+                System.out.println(15);
+                break;
             case 16:
                 absoluteMove(this.x-1, this.y+1);
+                System.out.println(16);
+                break;
             case 17:
                 absoluteMove(this.x-1, this.y);
+                System.out.println(17);
+                break;
             case 18:
                 absoluteMove(this.x-1, this.y-1);
+                System.out.println(18);
+                break;
             case 20:
                 photosynthesis();
                 break;
         }
     }
 
-    private void absoluteMove(int x, int y) {
-        System.out.println("Time to move!");
-        if ((x>=0) && (y>=0) && (x<=Environment.width) && (y<=Environment.height))
-            if (Environment.creatures[x][y]!=null)
+    private void absoluteMove(int newX, int newY) {
+        //System.out.println("Time to move!");
+        if ((this.x == newX) && (this.y == newY)) {
+            System.out.println("Совпадают текущий и новый набор координат");
+        }
+        if ((newX >= 0) && (newY >= 0) && (newX <= Environment.width - 1) && (newY <= Environment.height - 1)) {
+            if (Environment.creatures[newY][newY] != null) {
                 return;
-        if (x < 0) {
-            this.x = 0;
-        } else if (x >= Environment.width - 1) {
-            this.x = Environment.width - 1;
-        } else {
-            this.x = x;
+            } else {
+                Environment.creatures[newX][newY] = this;
+                Environment.creatures[this.x][this.y] = null;
+                this.x = newX;
+                this.y = newY;
+                /*
+                int oldX = this.x;
+                int oldY = this.y;
+                this.x = newX;
+                this.y = newY;
+                //Environment.creatures[newX][newY] = this.copy();
+                //Environment.creatures[oldX][oldY].status = 0;
+                if (Environment.creatures[oldX][oldY] != null) {
+                    System.out.println("Я этого пидора в Химках видал. Движением делится! Сча мы это исправим");
+                    if ((oldX == newX) && (oldY == newY)) {
+                        System.out.println("Совпадают старый и новый набор координат11");
+                    }
+                    if ((oldX == this.x) && (oldY == this.y)) {
+                        System.out.println("Совпадают старый и новый набор координат22");
+                    }
+                    Environment.creatures[oldX][oldY].status = 0;
+                }
+                */
+            }
         }
-        if (y < 0) {
-            this.y = 0;
-        } else if (y >= Environment.height - 1) {
-            this.y = Environment.height - 1;
-        } else {
-            this.y = y;
-        }
+    }
+
+    private void relativeMove(int x, int y) {
+        absoluteMove(this.x+x, this.y+y);
     }
 
     private String surrounded() {
@@ -128,8 +176,7 @@ public class Creature {
     }
 
     private void photosynthesis() {
-        double q = 11 - (15*y/Environment.height)+50;
-        energy += q; //Ускоренный рост для тестов
+        energy += 11 - (15*y/Environment.height) + 30; //Ускоренный рост для тестов
     }
 
     private void mitosis() {
@@ -181,7 +228,7 @@ public class Creature {
         newCreature.status = 1;
         newCreature.mind = this.mind;
         newCreature.mind.mutate();
-        this.mind.mutate();
+        //this.mind.mutate();
 
         Environment.creatures[newCreature.x][newCreature.y] = newCreature;
     }

@@ -37,7 +37,7 @@ public class Environment extends JFrame {
         population = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (creatures[x][y] == null) { //Не существует, рисуем белым
+                if ((creatures[x][y] == null) || (creatures[x][y].status == 0)) { //Не существует, рисуем белым
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect(coordX + x * 4, coordY + y * 4, 4,4);
                 } else if (creatures[x][y].status == 1) { //Живой, рисуем его цветом (временно зелёным)
