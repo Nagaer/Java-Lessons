@@ -76,7 +76,7 @@ public class Environment extends JFrame {
         graphics.drawString("Органика: " + organic, 14, 74);
 
         graphics.setColor(Color.WHITE);
-        graphics.fillRect(10, 80, 100, 16);
+        graphics.fillRect(10, 80, 120, 16);
         graphics.setColor(Color.BLACK);
         graphics.drawString("Популяция: " + population, 14, 94);
     }
@@ -92,7 +92,7 @@ public class Environment extends JFrame {
                 }
             }
             generation++;
-            if (generation % 10 == 0) {
+            if (generation % 100 == 0) {
                 paint(getGraphics());
             }
         }

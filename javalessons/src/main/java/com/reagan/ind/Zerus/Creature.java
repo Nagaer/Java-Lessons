@@ -6,13 +6,12 @@ import java.util.*;
 public class Creature {
     //int hits; //Здоровье существа, опустится до 0 - погибнет
     int energy; //Энергия существа, опустится до 0 - начнёт отбавлять HP
-    int mineral;
+    int mineral; //Минералы существа
     int status; //Состояние существа. 0 - не существует, 1 - жив, 2 - труп
     int x, y; //Координаты существа
-    int direction;
-    int color_R, color_G, color_B;
-    List<Integer> color;
-    Mind mind; //Мозг - однонаправленный граф состояний
+    int direction; //Направление существа
+    int color_R, color_G, color_B; //Цвета существа
+    Mind mind; //Мозг
 
     void step() {
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
@@ -46,20 +45,99 @@ public class Creature {
                 mind.indirectIncCur(creatureMove(direction, true));
                 break;
             }
-            if (command == 41) {
+            if (command == 28) { //Относительный укус
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(eat(direction, false));
+                break;
+            }
+            if (command == 29) { //Абсолютный укус
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(eat(direction, true));
+                break;
+            }
+            if (command == 30) { //Относительный взгляд
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(see(direction, false));
+                break;
+            }
+            if (command == 31) { //Абсолютный взгляд
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(see(direction, true));
+                break;
+            }
+            if (command == 32) { //Относительный раздел
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(care(direction, false));
+                break;
+            }
+            if (command == 33) { //Абсолютный раздел
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(care(direction, true));
+                break;
+            }
+            if (command == 34) { //Относительный подарок
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(give(direction, false));
+                break;
+            }
+            if (command == 35) { //Абсолютный подарок
+                int direction = mind.getParam() % 8;
+                mind.indirectIncCur(give(direction, true));
+                break;
+            }
+            if (command == 36) { //Развернуться по горизонтали
+                if (Math.random() < 0.5)
+                    direction = 3;
+                else
+                    direction = 7;
+                mind.incCur(1);
+            }
+            if (command == 37) {
+                int param = mind.getParam()*Environment.height/mind.MIND_SIZE;
+                if (y < param)
+                    mind.incCur(2);
+                else
+                    mind.incCur(3);
+            }
+            if (command == 38) {
+                int param = mind.getParam()*1000/mind.MIND_SIZE;
+                if (energy < param)
+                    mind.incCur(2);
+                else
+                    mind.incCur(3);
+            }
+            if (command == 39) {
+                int param = mind.getParam()*1000/mind.MIND_SIZE;
+                if (mineral < param)
+                    mind.incCur(2);
+                else
+                    mind.incCur(3);
+            }
+            if (command == 41) { //Деление
                 mitosis();
                 mind.incCur(1);
                 break;
             }
-            if (command == 47) { //Добыча минералов
+            if (command == 47) { //Преобразование минералов
                 mineralisis();
+                mind.incCur(1);
+                break;
+            }
+            if (command == 48) { //Мутировать без деления
+                mind.mutate();
+                mind.mutate();
+                mind.incCur(1);
+                break;
+            }
+            if (command == 49) {
+                genomAttack();
                 mind.incCur(1);
                 break;
             }
         }
 
         int command = mind.genom.get(mind.cur); //Безусловный переход на случай несовпадения ни с одной из команд
-        if ((command != 47) || (command != 41) || ((command>=23) && (command<=27))) {
+        if (((command >= 0) && (command<=22)) || (command == 40) || ((command>=42) && (command<=63))) {
             mind.incCur(command);
         }
 
@@ -94,6 +172,10 @@ public class Creature {
         this.y = newY;
     }
 
+    public void delete() {
+        Environment.creatures[this.x][this.y] = null;
+    }
+
     private int creatureMove(int direction, boolean flag) { //flag=true=absolute, false=relative
         int newX, newY;
         if (flag) {
@@ -117,62 +199,16 @@ public class Creature {
         return 5;
     }
 
-    private String surrounded() {
-        List<String> directions = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8"));
-        if (x<=0) {
-            directions.remove("6");
-            directions.remove("7");
-            directions.remove("8");
-        }
-        if (y<=0) {
-            directions.remove("8");
-            directions.remove("1");
-            directions.remove("2");
-        }
-        if (x>=Environment.width - 1) {
-            directions.remove("2");
-            directions.remove("3");
-            directions.remove("4");
-        }
-        if (y>=Environment.height - 1) {
-            directions.remove("4");
-            directions.remove("5");
-            directions.remove("6");
-        }
-        if (directions.contains("1"))
-            if (Environment.creatures[x][y-1] != null)
-                directions.remove("1");
-        if (directions.contains("2"))
-            if (Environment.creatures[x+1][y-1] != null)
-                directions.remove("2");
-        if (directions.contains("3"))
-            if (Environment.creatures[x+1][y] != null)
-                directions.remove("3");
-        if (directions.contains("4"))
-            if (Environment.creatures[x+1][y+1] != null)
-                directions.remove("4");
-        if (directions.contains("5"))
-            if (Environment.creatures[x][y+1] != null)
-                directions.remove("5");
-        if (directions.contains("6"))
-            if (Environment.creatures[x-1][y+1] != null)
-                directions.remove("6");
-        if (directions.contains("7"))
-            if (Environment.creatures[x-1][y] != null)
-                directions.remove("7");
-        if (directions.contains("8"))
-            if (Environment.creatures[x-1][y-1] != null)
-                directions.remove("8");
-        if (directions.size() == 0) {
-            return "0";
-        }
-        int rnd = new Random().nextInt(directions.size());
-        return directions.get(rnd);
-    }
-
     private void photosynthesis() {
-
-        int enr = 14 - (15*y/Environment.height); //Ускоренный рост для тестов
+        int min;
+        if (mineral < 100) {
+            min = 0;
+        } else if (mineral < 400) {
+            min = 1;
+        } else {
+            min = 2;
+        }
+        int enr = 14 - (15*y/Environment.height) + min; //Ускоренный рост для тестов
         if (enr > 0) {
             energy += enr;
             goGreen(enr);
@@ -222,6 +258,148 @@ public class Creature {
             newCreature.mind.mutate();
 
         Environment.creatures[newCreature.x][newCreature.y] = newCreature;
+    }
+
+    public int eat(int direction, boolean flag) {
+        energy -= 4;
+        int eatX, eatY;
+        if (flag) {
+            eatX = xFromVectorA(direction);
+            eatY = yFromVectorA(direction);
+        } else {
+            eatX = xFromVectorR(direction);
+            eatY = yFromVectorR(direction);
+        }
+        if ((eatY < 0) || (eatY >= Environment.height))
+            return 3;
+        if (Environment.creatures[eatX][eatY] == null)
+            return 2;
+        if (Environment.creatures[eatX][eatY].status == 2) {
+            Environment.creatures[eatX][eatY].delete();
+            energy += 100;
+            goRed(100);
+            return 4;
+        }
+        int minDef = Environment.creatures[eatX][eatY].mineral,
+            enrDef = Environment.creatures[eatX][eatY].energy;
+        if (mineral >= minDef) {
+            mineral -= minDef;
+            int profit = 100 + enrDef/2;
+            Environment.creatures[eatX][eatY].delete();
+            energy += profit;
+            goRed(profit);
+            return 5;
+        }
+        minDef -= mineral;
+        Environment.creatures[eatX][eatY].mineral = minDef;
+        mineral = 0;
+        if (energy >= 2*minDef) {
+            Environment.creatures[eatX][eatY].delete();
+            int profit = 100 + (enrDef/2) - 2*minDef;
+            if (profit < 0)
+                profit = 0;
+            energy += profit;
+            goRed(profit);
+            return 5;
+        }
+        Environment.creatures[eatX][eatY].mineral = minDef - (energy/2);
+        energy = 0;
+        return 5;
+    }
+
+    public int see(int direction, boolean flag) {
+        int seeX, seeY;
+        if (flag) {
+            seeX = xFromVectorA(direction);
+            seeY = yFromVectorA(direction);
+        } else {
+            seeX = xFromVectorR(direction);
+            seeY = yFromVectorR(direction);
+        }
+        if ((seeY < 0) || (seeY >= Environment.height))
+            return 3;
+        if (Environment.creatures[seeX][seeY] == null)
+            return 2;
+        if (Environment.creatures[seeX][seeY].status == 2)
+            return 4;
+        return 5;
+    }
+
+    public int care(int direction, boolean flag) {
+        int careX, careY;
+        if (flag) {
+            careX = xFromVectorA(direction);
+            careY = yFromVectorA(direction);
+        } else {
+            careX = xFromVectorR(direction);
+            careY = yFromVectorR(direction);
+        }
+        if ((careY < 0) || (careY >= Environment.height))
+            return 3;
+        if (Environment.creatures[careX][careY] == null)
+            return 2;
+        if (Environment.creatures[careX][careY].status == 2)
+            return 4;
+
+        int enr0 = energy;
+        int enr1 = Environment.creatures[careX][careY].energy;
+        int min0 = mineral;
+        int min1 = Environment.creatures[careX][careY].mineral;
+        if (enr0 > enr1) {
+            int enr = (enr0 - enr1) / 2;
+            energy -= enr;
+            Environment.creatures[careX][careY].energy += enr;
+        }
+        if (min0 > min1) {
+            int min = (min0 - min1) / 2;
+            mineral -= min;
+            Environment.creatures[careX][careY].mineral += min;
+        }
+        return 5;
+    }
+
+    public int give(int direction, boolean flag) {
+        int giveX, giveY;
+        if (flag) {
+            giveX = xFromVectorA(direction);
+            giveY = yFromVectorA(direction);
+        } else {
+            giveX = xFromVectorR(direction);
+            giveY = yFromVectorR(direction);
+        }
+        if ((giveY < 0) || (giveY >= Environment.height))
+            return 3;
+        if (Environment.creatures[giveX][giveY] == null)
+            return 2;
+        if (Environment.creatures[giveX][giveY].status == 2)
+            return 4;
+
+        int enr0 = energy/4;
+        energy -= enr0;
+        Environment.creatures[giveX][giveY].energy += enr0;
+
+        int min0 = mineral;
+        if (min0 > 3) {
+            int min = min0 / 4;
+            mineral -= min;
+            Environment.creatures[giveX][giveY].mineral += min;
+            if (Environment.creatures[giveX][giveY].mineral > 999)
+                Environment.creatures[giveX][giveY].mineral = 999;
+        }
+        return 5;
+    }
+
+    private void genomAttack() {
+        int newX = xFromVectorR(0),
+            newY = yFromVectorR(0);
+        if ((newY >= 0) && (newY < Environment.height) && (Environment.creatures[newX][newY] != null)) {
+            if (Environment.creatures[newX][newY].status == 1) {
+                energy -= 10;
+                if (energy > 0) {
+                    Environment.creatures[newX][newY].mind.mutate();
+                }
+            }
+        }
     }
 
     private void goGreen(int num) {
