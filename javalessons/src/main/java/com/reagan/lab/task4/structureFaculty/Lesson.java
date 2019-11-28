@@ -39,11 +39,11 @@ public class Lesson {
         LTesting.printLesson();
     }
 */
-    boolean hasStudent(String name) {
-        return this.lessGroup.hasStudent(name);
+    boolean hasStudent(Student student) {
+        return this.lessGroup.hasStudent(student);
     }
 
-    boolean hasEducator(String name) {
-        return this.lessEducator.name.equals(name);
+    boolean hasEducator(Educator educator) {
+        return this.lessEducator == educator;
     }
 }

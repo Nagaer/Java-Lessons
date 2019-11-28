@@ -17,9 +17,8 @@ public class Environment extends JFrame {
         creatures = new Creature[width][height];
 
         setTitle("Зерус");
-        //Размер для окна
-        int winWidth = 1870; //1670
-        int winHeight = 970; //870
+        int winWidth = 1870;
+        int winHeight = 970;
         setSize(new Dimension(winWidth, winHeight));
         Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize(), fSize = getSize();
         if (fSize.height > sSize.height) {fSize.height = sSize.height;}

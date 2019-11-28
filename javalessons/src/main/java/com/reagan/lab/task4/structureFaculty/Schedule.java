@@ -59,7 +59,7 @@ public class Schedule {
     public Schedule searchStudent(Student student) {
         Schedule Sch = new Schedule(new ArrayList<>());
         for (Lesson l : this.lessonsList) {
-            if (l.hasStudent(student.name)) {
+            if (l.hasStudent(student)) {
                 Sch.lessonsList.add(l);
             }
         }
@@ -69,7 +69,7 @@ public class Schedule {
     public Schedule searchEducator(Educator educator) {
         Schedule Sch = new Schedule(new ArrayList<>());
         for (Lesson l : lessonsList) {
-            if (l.hasEducator(educator.name)) {
+            if (l.hasEducator(educator)) {
                 Sch.lessonsList.add(l);
             }
         }

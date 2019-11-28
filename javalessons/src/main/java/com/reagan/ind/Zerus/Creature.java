@@ -1,11 +1,15 @@
 package com.reagan.ind.Zerus;
 
+import com.google.gson.Gson;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
 public class Creature {
-    //int hits; //Здоровье существа, опустится до 0 - погибнет
-    int energy; //Энергия существа, опустится до 0 - начнёт отбавлять HP
+    int energy; //Энергия существа, опустится до 0 - смерть
     int mineral; //Минералы существа
     int status; //Состояние существа. 0 - не существует, 1 - жив, 2 - труп
     int x, y; //Координаты существа
@@ -523,4 +527,51 @@ public class Creature {
         }
         return 8;
     }
+
+    public void serializationInFile(String nameFile) throws IOException {
+        Gson gson = new Gson();
+        String stringCreature = gson.toJson(this);
+        try (FileWriter writer = new FileWriter(nameFile, false)) {
+            writer.write(stringCreature);
+            writer.flush();
+        }
+    }
+
+    public static Creature deserializationFromFile(String nameFile) throws IOException {
+        Gson gson = new Gson();
+        String result = "";
+        try (FileReader reader = new FileReader(nameFile)) {
+            int c;
+            while ((c=reader.read())!=-1) {
+                result = result.concat(String.valueOf((char)c));
+            }
+        }
+        return gson.fromJson(result, Creature.class);
+    }
+
+    private void printCreature() {
+        System.out.println(this);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Creature Adam = new Creature();
+        Adam.x = Environment.width/2;
+        Adam.y = Environment.height/2;
+        Adam.energy = 990;
+        Adam.mineral = 0;
+        Adam.direction = 4;
+        Adam.color_R = 170;
+        Adam.color_G = 170;
+        Adam.color_B = 170;
+        Adam.status = 1;
+        List<Integer> listMind = new ArrayList<>();
+        for (int i = 0; i < 64; ++i) {
+            listMind.add(25);
+        }
+        Adam.mind = new Mind(listMind);
+        Adam.serializationInFile("D:/serializationAdam.txt");
+        Creature Eva = deserializationFromFile("D:/serializationAdam.txt");
+        Eva.printCreature();
+    }
+
 }

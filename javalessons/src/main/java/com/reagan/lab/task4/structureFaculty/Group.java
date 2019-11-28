@@ -23,9 +23,9 @@ public class Group {
         System.out.print(this.name);
     }
 
-    boolean hasStudent(String name) {
-        for (Student student : grStudents) {
-            if (student.name.equals(name))
+    boolean hasStudent(Student student) {
+        for (Student st : grStudents) {
+            if (st == student)
                 return true;
         }
         return false;
