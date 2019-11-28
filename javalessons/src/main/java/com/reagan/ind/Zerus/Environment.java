@@ -10,6 +10,7 @@ public class Environment extends JFrame {
     static int width, height; //Кол-во клеток в среде
     static Creature[][] creatures; //Сетка существ
     private int generation, organic, population;
+    private Creature bestCreature;
 
     public Environment(int width, int height) {
         Environment.width = width;
@@ -82,7 +83,7 @@ public class Environment extends JFrame {
 
     private void run() {
         generation = 0;
-        while (generation < 1000000) {
+        while (generation < 10000) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     if (creatures[x][y] != null) {
@@ -91,10 +92,12 @@ public class Environment extends JFrame {
                 }
             }
             generation++;
-            if (generation % 100 == 0) {
+            if (generation % 1000 == 0) {
                 paint(getGraphics());
             }
+            updateBestCreature();
         }
+        bestCreature.printCreature();
     }
 
     public static void main(String[] args) {
@@ -120,7 +123,21 @@ public class Environment extends JFrame {
             listMind.add(25);
         }
         creature.mind = new Mind(listMind);
+        creature.points = 0;
 
         creatures[creature.x][creature.y] = creature;
+        bestCreature = creature;
+    }
+
+    private void updateBestCreature() {
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                if (Environment.creatures[i][j] != null) {
+                    if (Environment.creatures[i][j].points > bestCreature.points) {
+                        bestCreature = Environment.creatures[i][j];
+                    }
+                }
+            }
+        }
     }
 }

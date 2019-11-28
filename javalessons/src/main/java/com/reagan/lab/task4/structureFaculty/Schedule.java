@@ -1,5 +1,10 @@
 package com.reagan.lab.task4.structureFaculty;
 
+import com.google.gson.Gson;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +79,27 @@ public class Schedule {
             }
         }
         return Sch;
+    }
+
+    public void serializationInFile(String nameFile) throws IOException {
+        Gson gson = new Gson();
+        String stringSchedule = gson.toJson(this);
+        try (FileWriter writer = new FileWriter(nameFile, false)) {
+            writer.write(stringSchedule);
+            writer.flush();
+        }
+    }
+
+    public Schedule deserializationFromFile(String nameFile) throws IOException {
+        Gson gson = new Gson();
+        String result = "";
+        try (FileReader reader = new FileReader(nameFile)) {
+            int c;
+            while ((c=reader.read())!=-1) {
+                result = result.concat(String.valueOf((char)c));
+            }
+        }
+        return gson.fromJson(result, Schedule.class);
     }
 /*
     public static void main(String[] args) {

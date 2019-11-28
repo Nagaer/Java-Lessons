@@ -15,6 +15,7 @@ public class Creature {
     int x, y; //Координаты существа
     int direction; //Направление существа
     int color_R, color_G, color_B; //Цвета существа
+    int points; //Прототип подсчёта очков выживаемости
     Mind mind; //Мозг
 
     void step() {
@@ -167,16 +168,17 @@ public class Creature {
                 mineral = 999;
             }
         }
+        points += 10;
     }
 
-    public void move(int newX, int newY) {
+    private void move(int newX, int newY) {
         Environment.creatures[newX][newY] = this;
         Environment.creatures[this.x][this.y] = null;
         this.x = newX;
         this.y = newY;
     }
 
-    public void delete() {
+    private void delete() {
         Environment.creatures[this.x][this.y] = null;
     }
 
@@ -227,7 +229,7 @@ public class Creature {
         } else {
             energy += 4*mineral;
             mineral = 0;
-            goBlue(100);
+            goBlue(4*mineral);
         }
     }
 
@@ -264,7 +266,7 @@ public class Creature {
         Environment.creatures[newCreature.x][newCreature.y] = newCreature;
     }
 
-    public int eat(int direction, boolean flag) {
+    private int eat(int direction, boolean flag) {
         energy -= 4;
         int eatX, eatY;
         if (flag) {
@@ -311,7 +313,7 @@ public class Creature {
         return 5;
     }
 
-    public int see(int direction, boolean flag) {
+    private int see(int direction, boolean flag) {
         int seeX, seeY;
         if (flag) {
             seeX = xFromVectorA(direction);
@@ -329,7 +331,7 @@ public class Creature {
         return 5;
     }
 
-    public int care(int direction, boolean flag) {
+    private int care(int direction, boolean flag) {
         int careX, careY;
         if (flag) {
             careX = xFromVectorA(direction);
@@ -362,7 +364,7 @@ public class Creature {
         return 5;
     }
 
-    public int give(int direction, boolean flag) {
+    private int give(int direction, boolean flag) {
         int giveX, giveY;
         if (flag) {
             giveX = xFromVectorA(direction);
@@ -457,7 +459,7 @@ public class Creature {
             color_G = 0;
     }
 
-    public int xFromVectorR(int n) {
+    private int xFromVectorR(int n) {
         int xRes = x;
         n += direction;
         if (n >= 8) {
@@ -477,7 +479,7 @@ public class Creature {
         return xRes;
     }
 
-    public int xFromVectorA(int n) {
+    private int xFromVectorA(int n) {
         int xRes = x;
         if (n == 0 || n == 6 || n == 7) {
             xRes--;
@@ -493,7 +495,7 @@ public class Creature {
         return xRes;
     }
 
-    public int yFromVectorR(int n) {
+    private int yFromVectorR(int n) {
         int yRes = y;
         n += direction;
         if (n >= 8) {
@@ -507,7 +509,7 @@ public class Creature {
         return yRes;
     }
 
-    public int yFromVectorA(int n) {
+    private int yFromVectorA(int n) {
         int yRes = y;
         if (n == 0 || n == 1 || n == 2) {
             yRes--;
@@ -517,7 +519,7 @@ public class Creature {
         return yRes;
     }
 
-    public int findDirection() {
+    private int findDirection() {
         for (int i = 0; i < 8; ++i) {
             int dirX = xFromVectorR(i);
             int dirY = yFromVectorR(i);
@@ -526,6 +528,11 @@ public class Creature {
                     return i;
         }
         return 8;
+    }
+
+    private String serialization() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
     public void serializationInFile(String nameFile) throws IOException {
@@ -537,7 +544,7 @@ public class Creature {
         }
     }
 
-    public static Creature deserializationFromFile(String nameFile) throws IOException {
+    public Creature deserializationFromFile(String nameFile) throws IOException {
         Gson gson = new Gson();
         String result = "";
         try (FileReader reader = new FileReader(nameFile)) {
@@ -549,8 +556,8 @@ public class Creature {
         return gson.fromJson(result, Creature.class);
     }
 
-    private void printCreature() {
-        System.out.println(this);
+    public void printCreature() {
+        System.out.println(this.serialization());
     }
 
     public static void main(String[] args) throws IOException {
@@ -569,9 +576,7 @@ public class Creature {
             listMind.add(25);
         }
         Adam.mind = new Mind(listMind);
-        Adam.serializationInFile("D:/serializationAdam.txt");
-        Creature Eva = deserializationFromFile("D:/serializationAdam.txt");
-        Eva.printCreature();
+        System.out.println(Adam.serialization());
     }
 
 }
