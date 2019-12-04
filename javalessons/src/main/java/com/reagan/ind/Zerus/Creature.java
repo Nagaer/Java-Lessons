@@ -17,6 +17,7 @@ public class Creature {
     int color_R, color_G, color_B; //Цвета существа
     int points; //Прототип подсчёта очков выживаемости
     Mind mind; //Мозг
+    Creature prev, next;
 
     void step() {
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
@@ -25,7 +26,7 @@ public class Creature {
 
             if (command == 23) { //Относительная смена направления
                 int param = mind.getParam() % 8;
-                int newDirection = direction+param;
+                int newDirection = direction + param;
                 if (newDirection >= 8)
                     newDirection -= 8;
                 direction = newDirection;
@@ -41,13 +42,17 @@ public class Creature {
                 break;
             }
             if (command == 26) { //Относительный шаг
-                int direction = mind.getParam() % 8;
-                mind.indirectIncCur(creatureMove(direction, false));
+                if (isMulti() == 0) {
+                    int direction = mind.getParam() % 8;
+                    mind.indirectIncCur(creatureMove(direction, false));
+                }
                 break;
             }
             if (command == 27) { //Абсолютный шаг
-                int direction = mind.getParam() % 8;
-                mind.indirectIncCur(creatureMove(direction, true));
+                if (isMulti() == 0) {
+                    int direction = mind.getParam() % 8;
+                    mind.indirectIncCur(creatureMove(direction, true));
+                }
                 break;
             }
             if (command == 28) { //Относительный укус
@@ -70,12 +75,12 @@ public class Creature {
                 mind.indirectIncCur(see(direction, true));
                 break;
             }
-            if (command == 32) { //Относительный раздел
+            if (command == 32) { //Относительный делёж
                 int direction = mind.getParam() % 8;
                 mind.indirectIncCur(care(direction, false));
                 break;
             }
-            if (command == 33) { //Абсолютный раздел
+            if (command == 33) { //Абсолютный делёж
                 int direction = mind.getParam() % 8;
                 mind.indirectIncCur(care(direction, true));
                 break;
@@ -98,43 +103,74 @@ public class Creature {
                 mind.incCur(1);
             }
             if (command == 37) {
-                int param = mind.getParam()*Environment.height/mind.MIND_SIZE;
+                int param = mind.getParam() * Environment.height / mind.MIND_SIZE;
                 if (y < param)
                     mind.incCur(2);
                 else
                     mind.incCur(3);
             }
             if (command == 38) {
-                int param = mind.getParam()*1000/mind.MIND_SIZE;
+                int param = mind.getParam() * 1000 / mind.MIND_SIZE;
                 if (energy < param)
                     mind.incCur(2);
                 else
                     mind.incCur(3);
             }
             if (command == 39) {
-                int param = mind.getParam()*1000/mind.MIND_SIZE;
+                int param = mind.getParam() * 1000 / mind.MIND_SIZE;
                 if (mineral < param)
                     mind.incCur(2);
                 else
                     mind.incCur(3);
             }
-            if (command == 41) { //Деление
-                mitosis();
+            if (command == 40) { //Деление многоклеточного
+                int q = isMulti();
+                if (q == 3)
+                    mitosis();
+                else
+                    multiMitosis();
                 mind.incCur(1);
                 break;
             }
-            if (command == 47) { //Преобразование минералов
+            if (command == 41) { //Деление
+                int q = isMulti();
+                if ((q == 3) || (q == 0))
+                    mitosis();
+                else
+                    multiMitosis();
+                mind.incCur(1);
+                break;
+            }
+            if (command == 42) {
+                if (findDirection() == 8)
+                    mind.indirectIncCur(1);
+                else
+                    mind.indirectIncCur(2);
+            }
+            if (command == 43) {
+                mind.indirectIncCur(healthGrow());
+            }
+            if (command == 44) {
+                if (y > Environment.height / 2)
+                    mind.indirectIncCur(1);
+                else
+                    mind.indirectIncCur(2);
+            }
+            if (command == 45) {
+                mind.indirectIncCur(isMulti());
+            }
+            if (command == 46) { //Преобразование минералов
                 mineralisis();
                 mind.incCur(1);
                 break;
             }
-            if (command == 48) { //Мутировать без деления
+            if (command == 47) { //Мутировать без деления
                 mind.mutate();
                 mind.mutate();
                 mind.incCur(1);
                 break;
             }
-            if (command == 49) {
+            if (command == 48) { //Атака на геном
                 genomAttack();
                 mind.incCur(1);
                 break;
@@ -142,33 +178,63 @@ public class Creature {
         }
 
         int command = mind.genom.get(mind.cur); //Безусловный переход на случай несовпадения ни с одной из команд
-        if (((command >= 0) && (command<=22)) || (command == 40) || ((command>=42) && (command<=63))) {
+        if (((command >= 0) && (command <= 22)) || ((command >= 49) && (command <= 63))) {
             mind.incCur(command);
         }
 
-        if (energy > 1000) {
-            mitosis();
-        }
+        if (status == 1) { //Если бот всё ещё жив после команд
+            if (isMulti() == 3) {
+                int commonMinerals = mineral + prev.mineral + next.mineral;
+                mineral = commonMinerals/3;
+                prev.mineral = commonMinerals/3;
+                next.mineral = commonMinerals/3;
 
-		energy -= 3;
+                if ((prev.isMulti() == 3) && (next.isMulti()==3)) {
+                    int commonEnergy = energy + prev.energy + next.energy;
+                    energy = commonEnergy/3;
+                    prev.energy = commonEnergy/3;
+                    next.energy = commonEnergy/3;
+                }
+            } else if (isMulti() == 1) {
+                if (prev.isMulti() == 3) {
+                    int commonEnergy = energy + prev.energy;
+                    energy = commonEnergy*3/4;
+                    prev.energy = commonEnergy/4;
+                }
+            } else if (isMulti() == 2) {
+                if (next.isMulti() == 3) {
+                    int commonEnergy = energy + next.energy;
+                    energy = commonEnergy * 3 / 4;
+                    next.energy = commonEnergy / 4;
+                }
+            }
+            if (energy >= 1000) {
+                if ((isMulti() == 1) || (isMulti() == 2))
+                    multiMitosis();
+                else
+                    mitosis();
+            }
 
-        if (energy < 0) {
-            status = 2;
-        }
+            energy -= 3;
 
-        if (Environment.height > 2) {
-            mineral++;
-            if (y > Environment.height*2/3) {
+            if (energy < 0) {
+                die();
+            }
+
+            if (Environment.height > 2) {
                 mineral++;
+                if (y > Environment.height * 2 / 3) {
+                    mineral++;
+                }
+                if (y > Environment.height * 5 / 6) {
+                    mineral++;
+                }
+                if (mineral > 999) {
+                    mineral = 999;
+                }
             }
-            if (y > Environment.height*5/6) {
-                mineral++;
-            }
-            if (mineral > 999) {
-                mineral = 999;
-            }
+            points += 10;
         }
-        points += 10;
     }
 
     private void move(int newX, int newY) {
@@ -205,6 +271,16 @@ public class Creature {
         return 5;
     }
 
+    private void die() {
+        status = 2;
+        if (prev != null)
+            prev.next = null;
+        if (next != null)
+            next.prev = null;
+        prev = null;
+        next = null;
+    }
+
     private void photosynthesis() {
         int min;
         if (mineral < 100) {
@@ -214,7 +290,7 @@ public class Creature {
         } else {
             min = 2;
         }
-        int enr = 14 - (15*y/Environment.height) + min; //Ускоренный рост для тестов
+        int enr = 14 - (15 * y / Environment.height) + min;
         if (enr > 0) {
             energy += enr;
             goGreen(enr);
@@ -227,17 +303,16 @@ public class Creature {
             mineral -= 100;
             goBlue(100);
         } else {
-            energy += 4*mineral;
+            energy += 4 * mineral;
             mineral = 0;
-            goBlue(4*mineral);
+            goBlue(4 * mineral);
         }
     }
 
     private void mitosis() {
         this.energy -= 150;
-        if (this.energy<0)
+        if (this.energy < 0)
             return;
-
         int n = findDirection();
         if (n == 8) {
             status = 2;
@@ -247,11 +322,11 @@ public class Creature {
         int newX = xFromVectorR(n), newY = yFromVectorR(n);
         newCreature.x = newX;
         newCreature.y = newY;
-        newCreature.energy = this.energy/2;
+        newCreature.energy = this.energy / 2;
         this.energy /= 2;
-        newCreature.mineral = this.mineral/2;
+        newCreature.mineral = this.mineral / 2;
         this.mineral /= 2;
-        newCreature.direction = (int) (Math.random()*8);
+        newCreature.direction = (int) (Math.random() * 8);
         newCreature.color_R = color_R;
         newCreature.color_G = color_G;
         newCreature.color_B = color_B;
@@ -264,6 +339,72 @@ public class Creature {
             newCreature.mind.mutate();
 
         Environment.creatures[newCreature.x][newCreature.y] = newCreature;
+    }
+
+    private void multiMitosis() {
+        if ((prev != null) && (next != null))
+            return;
+        energy -= 150;
+        if (energy < 0)
+            return;
+        int n = findDirection();
+        if (n == 8) {
+            energy = 0;
+            return;
+        }
+        Creature newCreature = new Creature();
+        int newX = xFromVectorR(n), newY = yFromVectorR(n);
+        newCreature.x = newX;
+        newCreature.y = newY;
+        newCreature.energy = this.energy / 2;
+        this.energy /= 2;
+        newCreature.mineral = this.mineral / 2;
+        this.mineral /= 2;
+        newCreature.direction = (int) (Math.random() * 8);
+        newCreature.color_R = color_R;
+        newCreature.color_G = color_G;
+        newCreature.color_B = color_B;
+        newCreature.status = 1;
+        List<Integer> listMind = new ArrayList<>();
+        listMind.addAll(this.mind.genom);
+        newCreature.mind = new Mind(listMind);
+        newCreature.mind.cur = 0;
+        if (Math.random() < 0.25)
+            newCreature.mind.mutate();
+        if (next == null) {
+            next = newCreature;
+            newCreature.prev = this;
+            newCreature.next = null;
+        } else {
+            prev = newCreature;
+            newCreature.prev = null;
+            newCreature.next = this;
+        }
+    }
+
+    private int isMulti() {
+        int q = 0;
+        if (prev != null)
+            q += 1;
+        if (next != null)
+            q += 2;
+        return q;
+    }
+
+    private int healthGrow() {
+        int min;
+        if (mineral < 100) {
+            min = 0;
+        } else if (mineral < 400) {
+            min = 1;
+        } else {
+            min = 2;
+        }
+        int enr = 14 - (15 * y / Environment.height) + min;
+        if (enr >= 3)
+            return 1;
+        else
+            return 2;
     }
 
     private int eat(int direction, boolean flag) {
@@ -287,10 +428,10 @@ public class Creature {
             return 4;
         }
         int minDef = Environment.creatures[eatX][eatY].mineral,
-            enrDef = Environment.creatures[eatX][eatY].energy;
+                enrDef = Environment.creatures[eatX][eatY].energy;
         if (mineral >= minDef) {
             mineral -= minDef;
-            int profit = 100 + enrDef/2;
+            int profit = 100 + enrDef / 2;
             Environment.creatures[eatX][eatY].delete();
             energy += profit;
             goRed(profit);
@@ -299,16 +440,16 @@ public class Creature {
         minDef -= mineral;
         Environment.creatures[eatX][eatY].mineral = minDef;
         mineral = 0;
-        if (energy >= 2*minDef) {
+        if (energy >= 2 * minDef) {
             Environment.creatures[eatX][eatY].delete();
-            int profit = 100 + (enrDef/2) - 2*minDef;
+            int profit = 100 + (enrDef / 2) - 2 * minDef;
             if (profit < 0)
                 profit = 0;
             energy += profit;
             goRed(profit);
             return 5;
         }
-        Environment.creatures[eatX][eatY].mineral = minDef - (energy/2);
+        Environment.creatures[eatX][eatY].mineral = minDef - (energy / 2);
         energy = 0;
         return 5;
     }
@@ -380,7 +521,7 @@ public class Creature {
         if (Environment.creatures[giveX][giveY].status == 2)
             return 4;
 
-        int enr0 = energy/4;
+        int enr0 = energy / 4;
         energy -= enr0;
         Environment.creatures[giveX][giveY].energy += enr0;
 
@@ -397,7 +538,7 @@ public class Creature {
 
     private void genomAttack() {
         int newX = xFromVectorR(0),
-            newY = yFromVectorR(0);
+                newY = yFromVectorR(0);
         if ((newY >= 0) && (newY < Environment.height) && (Environment.creatures[newX][newY] != null)) {
             if (Environment.creatures[newX][newY].status == 1) {
                 energy -= 10;
@@ -412,7 +553,7 @@ public class Creature {
         color_G += num;
         if (color_G + num > 255)
             color_G = 255;
-        int nm = num/2;
+        int nm = num / 2;
         color_R -= nm;
         if (color_R < 0)
             color_R = 0;
@@ -429,7 +570,7 @@ public class Creature {
         color_B += num;
         if (color_B + num > 255)
             color_B = 255;
-        int nm = num/2;
+        int nm = num / 2;
         color_G -= nm;
         if (color_G < 0)
             color_R += color_G;
@@ -446,7 +587,7 @@ public class Creature {
         color_R += num;
         if (color_R + num > 255)
             color_R = 255;
-        int nm = num/2;
+        int nm = num / 2;
         color_G -= nm;
         if (color_G < 0)
             color_B -= color_G;
@@ -549,8 +690,8 @@ public class Creature {
         String result = "";
         try (FileReader reader = new FileReader(nameFile)) {
             int c;
-            while ((c=reader.read())!=-1) {
-                result = result.concat(String.valueOf((char)c));
+            while ((c = reader.read()) != -1) {
+                result = result.concat(String.valueOf((char) c));
             }
         }
         return gson.fromJson(result, Creature.class);
@@ -558,25 +699,6 @@ public class Creature {
 
     public void printCreature() {
         System.out.println(this.serialization());
-    }
-
-    public static void main(String[] args) throws IOException {
-        Creature Adam = new Creature();
-        Adam.x = Environment.width/2;
-        Adam.y = Environment.height/2;
-        Adam.energy = 990;
-        Adam.mineral = 0;
-        Adam.direction = 4;
-        Adam.color_R = 170;
-        Adam.color_G = 170;
-        Adam.color_B = 170;
-        Adam.status = 1;
-        List<Integer> listMind = new ArrayList<>();
-        for (int i = 0; i < 64; ++i) {
-            listMind.add(25);
-        }
-        Adam.mind = new Mind(listMind);
-        System.out.println(Adam.serialization());
     }
 
 }
