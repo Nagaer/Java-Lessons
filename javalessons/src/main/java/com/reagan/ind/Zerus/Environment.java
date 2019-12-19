@@ -1,9 +1,10 @@
 package com.reagan.ind.Zerus;
 
+//spring-boot-starter-web
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Environment extends JFrame {
@@ -92,12 +93,12 @@ public class Environment extends JFrame {
                 }
             }
             generation++;
-            if (generation % 1000 == 0) {
+            if (generation % 10 == 0) {
                 paint(getGraphics());
             }
             updateBestCreature();
         }
-        bestCreature.printCreature();
+        //bestCreature.printCreature();
     }
 
     public static void main(String[] args) {

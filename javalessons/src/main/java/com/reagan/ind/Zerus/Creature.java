@@ -17,7 +17,7 @@ public class Creature {
     int color_R, color_G, color_B; //Цвета существа
     int points; //Прототип подсчёта очков выживаемости
     Mind mind; //Мозг
-    Creature prev, next;
+    private Creature prev, next; //Ссылки на предыдущего и следующего существа в цепочке
 
     void step() {
         if (status == 0 || status == 2) return; //Если мы не существуем или мертвы, ничего не делаем
@@ -141,22 +141,22 @@ public class Creature {
                 mind.incCur(1);
                 break;
             }
-            if (command == 42) {
+            if (command == 42) { //Закрыт ли путь
                 if (findDirection() == 8)
                     mind.indirectIncCur(1);
                 else
                     mind.indirectIncCur(2);
             }
-            if (command == 43) {
-                mind.indirectIncCur(healthGrow());
+            if (command == 43) { //Растёт ли энергия
+                mind.indirectIncCur(energyGrow());
             }
-            if (command == 44) {
+            if (command == 44) { //Растут ли минералы
                 if (y > Environment.height / 2)
                     mind.indirectIncCur(1);
                 else
                     mind.indirectIncCur(2);
             }
-            if (command == 45) {
+            if (command == 45) { //Является ли многоклеточным
                 mind.indirectIncCur(isMulti());
             }
             if (command == 46) { //Преобразование минералов
@@ -391,7 +391,7 @@ public class Creature {
         return q;
     }
 
-    private int healthGrow() {
+    private int energyGrow() {
         int min;
         if (mineral < 100) {
             min = 0;
