@@ -1,5 +1,3 @@
-//package com.reagan.ind.Zerus;
-
 import java.util.List;
 
 public class Mind {
